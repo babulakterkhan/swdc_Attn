@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teacher's Attendance</title>
+<style>
+body { font-family: Arial, sans-serif; margin: 10px; }
+h2, h3 { text-align: center; margin: 5px 0; }
+table {
+    width: 100%;
+    max-width: 1200px;
+    border-collapse: collapse;
+    margin: 10px auto;
+}
+th, td {
+    border: 1px solid black;
+    padding: 8px;
+    text-align: left;
+    word-wrap: break-word;
+}
+.present { background-color: #b2f2bb; } /* green */
+.absent { background-color: #ffa8a8; } /* red */
+
+input[type="text"], input[type="month"], input[type="date"] {
+    width: 100%;
+    max-width: 400px;
+    padding: 6px;
+    margin: 10px auto;
+    display: block;
+}
+
+/* বাটন স্টাইল */
+.btn-container { text-align: center; margin: 20px; }
+button {
+    padding: 10px 20px;
+    margin: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+.print-btn { background-color: #007bff; color: white; border: none; border-radius: 5px; }
+.csv-btn { background-color: #28a745; color: white; border: none; border-radius: 5px; }
+
+/* প্রিন্ট করার সময় যা যা হাইড হবে */
+@media print {
+    #login-screen, #searchInput, label, #monthFilter, #dateFilter, .btn-container, select {
+        display: none !important;
+    }
+    body { margin: 0; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border: 1px solid black; padding: 5px; font-size: 12px; }
+    tr.present { background-color: #b2f2bb !important; -webkit-print-color-adjust: exact; }
+    tr.absent { background-color: #ffa8a8 !important; -webkit-print-color-adjust: exact; }
+}
+
+@media screen and (max-width: 600px) {
+    th, td { font-size: 14px; padding: 6px; }
+    input[type="text"], input[type="month"], input[type="date"] { max-width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<div id="login-screen" style="position:fixed; top:0; left:0; width:100%; height:100%; background:white; z-index:9999; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+  <h3>অনুগ্রহ করে পাসওয়ার্ড দিন</h3>
+  <input type="password" id="pass-input" style="padding:10px; margin-bottom:10px; border-radius:5px; border:1px solid #ccc;">
+  <button onclick="checkPass()" style="background:#28a745; color:white; border:none; border-radius:5px;">Login</button>
+  <p id="error-msg" style="color:red; display:none;">ভুল পাসওয়ার্ড!</p>
+</div>
+
+<h2>SHAHZADPUR WOMEN'S DEGREE COLLEGE</h2>
+<h2 style="font-size: 18px; color: #555;">Teacher's Attendance</h2>
+
+<h3 id="topDateDisplay" style="color: #007bff;">Date: </h3>
+
+<input type="text" id="searchInput" placeholder="Search by Name or ID..." onkeyup="filterTable()">
+
+<div style="text-align: center;">
+    <label for="monthFilter">Filter by Month:</label>
+    <input type="month" id="monthFilter" onchange="filterByMonth()" style="display:inline-block; width:auto;">
+    <label for="dateFilter">Filter by Date:</label>
+    <input type="date" id="dateFilter" onchange="filterByDate()" style="display:inline-block; width:auto;">
+</div>
+
+<table id="attTable">
+<thead>
+<tr>
+<th>ID</th>
+<th>Name</th>
+<th>Designation</th>
+<th>Status</th>
+<th>Date</th>
+<th>Time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="absent"><td>456202</td><td>MD. RUHUL AMIN</td><td>Principal</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456204</td><td>MD. ENAMUL KABIR</td><td>Asst. Professor</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456205</td><td>MD. RAFIQUL ISLAM</td><td>Asst. Professor</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456206</td><td>MD. ABDUL QUYUM</td><td>Asst. Professor</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456207</td><td>MD. NUHU ALI</td><td>Asst. Professor</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456208</td><td>MOMOTAJ MOHOL</td><td>Asst. Professor</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456209</td><td>MD. RAWSHON ALI</td><td>Asst. Professor</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456210</td><td>MD. MUAZZEM HOSSAIN CHOWDHURY</td><td>Asst. Professor</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456211</td><td>MST. FATIMA KHATUN</td><td>Asst. Professor</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456212</td><td>MD. ASLAM MIAH</td><td>Asst. Professor</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456213</td><td>KONA RANI CHAKI</td><td>Asst. Professor</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456214</td><td>MST. ROZINA KHATUN</td><td>Asst. Professor</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456215</td><td>MD. MAHBUBUL HASAN</td><td>Asst. Professor</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456216</td><td>MD. SARWARDY AZAD</td><td>Asst. Professor</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456217</td><td>MD. HAZRAT ALI</td><td>Asst. Professor</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456218</td><td>MD. NIZAM UDDIN AKONDA</td><td>Asst. Professor</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456220</td><td>SHAHINA BANU</td><td>Asst. Professor</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456221</td><td>SHAHID SAKAWAT CHOWDHURY</td><td>Asst. Professor</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456222</td><td>MOST. UMME SALMA</td><td>Asst. Professor</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456223</td><td>MD. MAHFUZUR RAHMAN</td><td>Asst. Professor</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456224</td><td>MOST. ZINNAT ARA KHATUN</td><td>Asst. Professor</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456225</td><td>GULBEG KHATUN</td><td>Asst. Professor</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456226</td><td>MD FARHAD HOSSAIN</td><td>Asst. Professor</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456227</td><td>ZARZIS AHMED BIPU</td><td>Asst. Professor</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456228</td><td>MD. MOHOR ULLAH</td><td>Asst. Professor</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456229</td><td>MD. A. MANNAN</td><td>Asst. Professor</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456230</td><td>MD. ALAMGIR HOSSAIN</td><td>Asst. Professor</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456231</td><td>MD. GOLAM HASNAYEN KHAN</td><td>Asst. Professor</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456232</td><td>MD. ALAMIN HOSSAIN</td><td>Lecturer</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456233</td><td>MD. ALMAS ANSARY</td><td>Lecturer</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456234</td><td>MD. SHAMIM HASAN</td><td>Lecturer</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456235</td><td>MST. NURUN NAHAR</td><td>Lecturer</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456236</td><td>MD. AMANULLAH AL-MAMUN</td><td>Lecturer</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456237</td><td>MST. JAHANARA PARVIN</td><td>Demonstrator</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456238</td><td>MD. ALTAF HOSSAIN</td><td>Demonstrator</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456239</td><td>MST. RUNA LAYLA</td><td>Demonstrator</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456240</td><td>MST. FARIDA PERVIN</td><td>Physical Teacher</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456241</td><td>MD. RAFIQUL ISLAM</td><td>OFF ASS & COM OPE</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456243</td><td>MD. SIRAJUL ISLAM</td><td>MLSS</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456244</td><td>MD. RASEL ALI</td><td>MLSS</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456245</td><td>MST. SHAHINUR KHATUN</td><td></td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456246</td><td>MOST. RONG MALA KHATUN</td><td>MLSS</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456247</td><td>MD. ALHAZ ALI</td><td>MLSS</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456248</td><td>MD. ABID HASAN SAGOR</td><td>Lab Assistant</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456249</td><td>MOST. SIZIA KHATUN</td><td>MLSS</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456250</td><td>MD. HELAL UDDIN</td><td>MLSS</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456251</td><td>MD. ABIR HOSSAIN</td><td>MLSS</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456252</td><td>MD. SAIFUL ISLAM</td><td>MLSS</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456254</td><td>REHAN ARA BEGUM</td><td>Asst. Professor</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456255</td><td>MD. ABU SYED</td><td>MLSS</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456256</td><td>MST. NAZMA YASMIN</td><td>Asst. Teacher</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456257</td><td>AISA AKHTER</td><td>Demonstrator</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456258</td><td>ALAMGIR AHMED</td><td>Lecturer</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456259</td><td>S.M. RAFIQUL ISLAM</td><td>Asst. Professor</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456260</td><td>MD. MAHBUBUL ALAM</td><td>Asst. Professor</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456261</td><td>MD. ABDUL MOTTALIB</td><td>Demonstrator</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456262</td><td>MD. ABDUL WAHED</td><td>Asst. Professor</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456263</td><td>MD. HASAN ALI</td><td>Asst. Professor</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456264</td><td>MD. HABIBUR RAHMAN</td><td>Lab Assistant</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456266</td><td>MST. MITU PARVIN</td><td>Lab Assistant</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456267</td><td>MD. MEHEDI HASAN</td><td>Lab Assistant</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456268</td><td>MD. SHOHIDUL ISLAM</td><td>Asst. Professor</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+<tr class="absent"><td>456269</td><td>MST. AMBIA KHATUN</td><td>Lecturer</td><td><select onchange="updateStatus(this)"><option>Absent</option><option>Present</option></select></td><td class="date"></td><td class="time"></td></tr>
+
+</tbody>
+</table>
+
+<div class="btn-container">
+    <button class="csv-btn" onclick="downloadCSV()">Download CSV</button>
+    <button class="print-btn" onclick="printReport()">Print Attendance</button>
+</div>
+
+<script>
+// পাসওয়ার্ড চেক
+function checkPass() {
+  const input = document.getElementById('pass-input').value;
+  const correctPass = "12345678"; 
+  if (input === correctPass) {
+    document.getElementById('login-screen').style.display = 'none';
+  } else {
+    document.getElementById('error-msg').style.display = 'block';
+  }
+}
+
+// প্রিন্ট ফাংশন
+function printReport() {
+    window.print();
+}
+
+// আজকের তারিখ সেট করা
+document.addEventListener("DOMContentLoaded", () => {
+    const today = new Date().toLocaleDateString('en-GB'); // DD/MM/YYYY format
+    document.getElementById("topDateDisplay").innerText = "Date: " + today;
+
+    const rows = document.querySelectorAll("#attTable tbody tr");
+    rows.forEach((row) => {
+        const dateCell = row.querySelector(".date");
+        if(dateCell) dateCell.innerText = today;
+    });
+});
+
+function updateStatus(sel){
+    const row = sel.parentElement.parentElement;
+    const timeCell = row.querySelector('.time');
+    if(sel.value === "Present"){
+        row.className = "present";
+        const now = new Date();
+        timeCell.innerText = now.toLocaleTimeString();
+    } else {
+        row.className = "absent";
+        timeCell.innerText = "";
+    }
+}
+
+function downloadCSV(){
+    const rows = document.querySelectorAll("#attTable tr");
+    let csv = "ID,Name,Designation,Status,Date,Time\n";
+    rows.forEach((row,index)=>{
+        if(index===0) return;
+        const cells = row.querySelectorAll("td");
+        const id = cells[0].innerText;
+        const name = cells[1].innerText;
+        const desig = cells[2].innerText;
+        const status = cells[3].querySelector("select").value;
+        const date = cells[4].innerText;
+        const time = cells[5].innerText;
+        csv += `${id},${name},${desig},${status},${date},${time}\n`;
+    });
+    const blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "attendance.csv";
+    link.click();
+}
+
+function filterTable(){
+    const input = document.getElementById("searchInput").value.toUpperCase();
+    const table = document.getElementById("attTable");
+    const tr = table.getElementsByTagName("tr");
+    for(let i=1;i<tr.length;i++){
+        const tdID = tr[i].getElementsByTagName("td")[0];
+        const tdName = tr[i].getElementsByTagName("td")[1];
+        if(tdID && tdName){
+            const txtValue = tdID.textContent + " " + tdName.textContent;
+            tr[i].style.display = txtValue.toUpperCase().indexOf(input) > -1 ? "" : "none";
+        }
+    }
+}
+
+function filterByMonth() {
+    const input = document.getElementById("monthFilter").value; 
+    const tr = document.querySelectorAll("#attTable tbody tr");
+    tr.forEach(row => {
+        const dateCell = row.querySelector(".date");
+        const parts = dateCell.innerText.split('/');
+        const rowMonth = `${parts[2]}-${parts[1]}`; // YYYY-MM
+        row.style.display = (input === "" || input === rowMonth) ? "" : "none";
+    });
+}
+
+function filterByDate() {
+    const input = document.getElementById("dateFilter").value; 
+    const tr = document.querySelectorAll("#attTable tbody tr");
+    tr.forEach(row => {
+        const dateCell = row.querySelector(".date");
+        const parts = dateCell.innerText.split('/');
+        const formattedCell = `${parts[2]}-${parts[1]}-${parts[0]}`; // YYYY-MM-DD
+        row.style.display = (input === "" || input === formattedCell) ? "" : "none";
+    });
+}
+</script>
+
+</body>
+</html>
